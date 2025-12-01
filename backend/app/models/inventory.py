@@ -26,3 +26,23 @@ class Inventory(Base):
     # Relationships
     center = relationship("DistributionCenter", back_populates="inventory")
     package = relationship("AidPackage", back_populates="inventory")
+
+    @property
+    def center_name(self):
+        return self.center.center_name if self.center else None
+
+    @property
+    def center_location(self):
+        return f"{self.center.city}, {self.center.state}" if self.center else None
+
+    @property
+    def package_name(self):
+        return self.package.package_name if self.package else None
+
+    @property
+    def package_category(self):
+        return self.package.category if self.package else None
+
+    @property
+    def quantity(self):
+        return self.quantity_on_hand

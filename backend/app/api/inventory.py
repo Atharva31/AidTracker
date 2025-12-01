@@ -3,7 +3,7 @@ Inventory API Routes
 """
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import text
 from typing import List
 
@@ -37,7 +37,10 @@ def get_inventory(
     if low_stock:
         query = query.filter(Inventory.quantity_on_hand <= Inventory.reorder_level)
 
-    inventory = query.offset(skip).limit(limit).all()
+    inventory = query.options(
+        joinedload(Inventory.center),
+        joinedload(Inventory.package)
+    ).offset(skip).limit(limit).all()
     return inventory
 
 

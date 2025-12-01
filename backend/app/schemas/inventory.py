@@ -26,6 +26,13 @@ class InventoryResponse(InventoryBase):
     created_at: datetime
     updated_at: datetime
 
+    # Flattened fields
+    center_name: Optional[str] = None
+    center_location: Optional[str] = None
+    package_name: Optional[str] = None
+    package_category: Optional[str] = None
+    quantity: Optional[int] = None
+
     class Config:
         from_attributes = True
 

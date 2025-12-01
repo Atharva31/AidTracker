@@ -64,7 +64,7 @@ export default function Distribution() {
       setCenters(centersRes.data);
       setPackages(packagesRes.data);
       setHouseholds(householdsRes.data);
-      setRecentDistributions(logsRes.data);
+      setRecentDistributions(logsRes.data.logs);
     } catch (err) {
       setError('Failed to load data: ' + (err.response?.data?.detail || err.message));
       console.error('Load error:', err);
@@ -185,7 +185,7 @@ export default function Distribution() {
                     <MenuItem value="">Select a center</MenuItem>
                     {centers.map((center) => (
                       <MenuItem key={center.center_id} value={center.center_id}>
-                        {center.name} - {center.location}
+                        {center.center_name} - {center.city}, {center.state}
                       </MenuItem>
                     ))}
                   </TextField>

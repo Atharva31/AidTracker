@@ -44,12 +44,24 @@ export default function Reports() {
       const [summaryRes, pendingRes, statsRes] = await Promise.all([
         reportsAPI.getMonthlySummary(),
         reportsAPI.getPendingHouseholds(),
-        reportsAPI.getStatistics(),
+        reportsAPI.getDashboard(),
       ]);
 
-      setMonthlySummary(summaryRes.data);
-      setPendingHouseholds(pendingRes.data);
-      setStatistics(statsRes.data);
+      setMonthlySummary(summaryRes.data.summary);
+      setPendingHouseholds(pendingRes.data.households);
+
+      // Map dashboard data to statistics format expected by UI
+      const dashboard = statsRes.data;
+      setStatistics({
+        total_distributions: dashboard.total_distributions,
+        unique_households: dashboard.total_households, // Approximation
+        active_centers: dashboard.total_centers,
+        package_types: 12, // Hardcoded for now or fetch from packages API
+        most_distributed_package: 'Basic Food Kit', // Placeholder
+        most_distributed_count: 0,
+        avg_days_between_distributions: 0,
+        distribution_rate: (dashboard.total_distributions / dashboard.total_households) * 100
+      });
       setError(null);
     } catch (err) {
       setError('Failed to load reports: ' + (err.response?.data?.detail || err.message));
@@ -205,7 +217,7 @@ export default function Reports() {
                         <TableRow key={index} hover>
                           <TableCell>
                             <Chip
-                              label={new Date(2024, item.month - 1).toLocaleString('default', { month: 'long' })}
+                              label={new Date(item.year, item.month - 1).toLocaleString('default', { month: 'long' })}
                               size="small"
                               color="primary"
                               variant="outlined"
@@ -273,7 +285,7 @@ export default function Reports() {
                               {household.primary_contact_name}
                             </Typography>
                             <Typography variant="caption" color="textSecondary">
-                              Size: {household.household_size}
+                              Size: {household.family_size}
                             </Typography>
                           </TableCell>
                           <TableCell>
@@ -291,8 +303,8 @@ export default function Reports() {
                                 !household.days_since_last_distribution
                                   ? 'error'
                                   : household.days_since_last_distribution > 60
-                                  ? 'error'
-                                  : 'warning'
+                                    ? 'error'
+                                    : 'warning'
                               }
                             />
                           </TableCell>
@@ -301,11 +313,11 @@ export default function Reports() {
                               label={household.priority_level}
                               size="small"
                               color={
-                                household.priority_level === 1
+                                ['critical', 'high'].includes(household.priority_level)
                                   ? 'error'
-                                  : household.priority_level === 2
-                                  ? 'warning'
-                                  : 'default'
+                                  : household.priority_level === 'medium'
+                                    ? 'warning'
+                                    : 'default'
                               }
                             />
                           </TableCell>

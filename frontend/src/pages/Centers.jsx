@@ -41,9 +41,12 @@ export default function Centers() {
   const [editingCenter, setEditingCenter] = useState(null);
 
   const [formData, setFormData] = useState({
-    name: '',
-    location: '',
-    contact_number: '',
+    center_name: '',
+    address: '',
+    city: '',
+    state: '',
+    zip_code: '',
+    phone_number: '',
   });
 
   useEffect(() => {
@@ -68,16 +71,22 @@ export default function Centers() {
     if (center) {
       setEditingCenter(center);
       setFormData({
-        name: center.name,
-        location: center.location,
-        contact_number: center.contact_number || '',
+        center_name: center.center_name,
+        address: center.address,
+        city: center.city,
+        state: center.state,
+        zip_code: center.zip_code,
+        phone_number: center.phone_number || '',
       });
     } else {
       setEditingCenter(null);
       setFormData({
-        name: '',
-        location: '',
-        contact_number: '',
+        center_name: '',
+        address: '',
+        city: '',
+        state: '',
+        zip_code: '',
+        phone_number: '',
       });
     }
     setOpenDialog(true);
@@ -87,9 +96,12 @@ export default function Centers() {
     setOpenDialog(false);
     setEditingCenter(null);
     setFormData({
-      name: '',
-      location: '',
-      contact_number: '',
+      center_name: '',
+      address: '',
+      city: '',
+      state: '',
+      zip_code: '',
+      phone_number: '',
     });
   };
 
@@ -208,20 +220,20 @@ export default function Centers() {
                       <TableCell>{center.center_id}</TableCell>
                       <TableCell>
                         <Typography variant="body2" fontWeight="600">
-                          {center.name}
+                          {center.center_name}
                         </Typography>
                       </TableCell>
                       <TableCell>
                         <Box display="flex" alignItems="center" gap={1}>
                           <LocationIcon fontSize="small" color="action" />
                           <Typography variant="body2">
-                            {center.location}
+                            {center.address}, {center.city}, {center.state} {center.zip_code}
                           </Typography>
                         </Box>
                       </TableCell>
                       <TableCell>
                         <Typography variant="body2">
-                          {center.contact_number || 'N/A'}
+                          {center.phone_number || 'N/A'}
                         </Typography>
                       </TableCell>
                       <TableCell align="right">
@@ -260,8 +272,8 @@ export default function Centers() {
               <TextField
                 fullWidth
                 label="Center Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                value={formData.center_name}
+                onChange={(e) => setFormData({ ...formData, center_name: e.target.value })}
                 required
                 placeholder="e.g., Milpitas Community Center"
               />
@@ -269,19 +281,49 @@ export default function Centers() {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Location"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                label="Address"
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 required
-                placeholder="e.g., 123 Main St, Milpitas, CA 95035"
+                placeholder="e.g., 123 Main St"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="City"
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                required
+                placeholder="e.g., Milpitas"
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="State"
+                value={formData.state}
+                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                required
+                placeholder="CA"
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="Zip Code"
+                value={formData.zip_code}
+                onChange={(e) => setFormData({ ...formData, zip_code: e.target.value })}
+                required
+                placeholder="95035"
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Contact Number"
-                value={formData.contact_number}
-                onChange={(e) => setFormData({ ...formData, contact_number: e.target.value })}
+                value={formData.phone_number}
+                onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                 placeholder="e.g., (408) 555-1234"
               />
             </Grid>
@@ -293,7 +335,7 @@ export default function Centers() {
             onClick={handleSubmit}
             variant="contained"
             color="primary"
-            disabled={!formData.name || !formData.location}
+            disabled={!formData.center_name || !formData.address || !formData.city || !formData.state || !formData.zip_code}
           >
             {editingCenter ? 'Update' : 'Create'}
           </Button>

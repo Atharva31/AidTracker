@@ -3,7 +3,7 @@ Distribution API Routes - Core functionality with concurrency control
 """
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List
 from datetime import datetime
 
@@ -12,7 +12,8 @@ from app.schemas.distribution import (
     DistributionRequest,
     DistributionResponse,
     EligibilityCheckRequest,
-    EligibilityCheckResponse
+    EligibilityCheckResponse,
+    DistributionLogResponse
 )
 from app.services.distribution_service import DistributionService
 from app.models import DistributionLog
@@ -86,12 +87,16 @@ def get_distribution_logs(
     """
     Get distribution logs (audit trail)
     """
-    logs = db.query(DistributionLog).order_by(
+    logs = db.query(DistributionLog).options(
+        joinedload(DistributionLog.household),
+        joinedload(DistributionLog.package),
+        joinedload(DistributionLog.center)
+    ).order_by(
         DistributionLog.distribution_date.desc()
     ).offset(offset).limit(limit).all()
 
     return {
-        "logs": logs,
+        "logs": [DistributionLogResponse.model_validate(log) for log in logs],
         "total": db.query(DistributionLog).count(),
         "limit": limit,
         "offset": offset

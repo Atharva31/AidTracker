@@ -15,8 +15,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./database/schemas:/docker-entrypoint-initdb.d/schemas
-      - ./database/seeds:/docker-entrypoint-initdb.d/seeds
+      - ./database:/docker-entrypoint-initdb.d
     networks:
       - aidtracker_network
     healthcheck:

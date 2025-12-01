@@ -291,7 +291,7 @@ INSERT INTO Distribution_Log (household_id, package_id, center_id, staff_id, qua
 
 -- Display confirmation
 SELECT 'Seed data inserted successfully' AS status;
-SELECT '==================================' AS separator;
+SELECT '==================================' AS "separator";
 SELECT 'Database Statistics:' AS info;
 SELECT COUNT(*) AS total_centers FROM Distribution_Centers;
 SELECT COUNT(*) AS total_packages FROM Aid_Packages;
@@ -299,4 +299,4 @@ SELECT COUNT(*) AS total_households FROM Households;
 SELECT COUNT(*) AS total_staff FROM Staff_Members;
 SELECT COUNT(*) AS total_inventory_records FROM Inventory;
 SELECT COUNT(*) AS total_distributions FROM Distribution_Log;
-SELECT '==================================' AS separator;
+SELECT '==================================' AS "separator";

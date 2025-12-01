@@ -32,3 +32,22 @@ class EligibilityCheckResponse(BaseModel):
     message: str
     household_id: int
     package_id: int
+
+
+class DistributionLogResponse(BaseModel):
+    """Distribution log entry with details"""
+    log_id: int
+    distribution_date: datetime
+    transaction_status: str
+    household_id: int
+    package_id: int
+    center_id: int
+    quantity_distributed: int
+    
+    # Flattened fields from properties
+    household_contact: Optional[str] = None
+    package_name: Optional[str] = None
+    center_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True

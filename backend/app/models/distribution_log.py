@@ -26,3 +26,15 @@ class DistributionLog(Base):
     package = relationship("AidPackage", back_populates="distribution_logs")
     center = relationship("DistributionCenter", back_populates="distribution_logs")
     staff = relationship("StaffMember", back_populates="distribution_logs")
+
+    @property
+    def household_contact(self):
+        return self.household.primary_contact_name if self.household else None
+
+    @property
+    def package_name(self):
+        return self.package.package_name if self.package else None
+
+    @property
+    def center_name(self):
+        return self.center.center_name if self.center else None

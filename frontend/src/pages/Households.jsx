@@ -45,11 +45,18 @@ export default function Households() {
   const [editingHousehold, setEditingHousehold] = useState(null);
 
   const [formData, setFormData] = useState({
+    family_name: '',
     primary_contact_name: '',
     phone_number: '',
+    email: '',
     address: '',
-    household_size: 1,
-    priority_level: 1,
+    city: '',
+    state: '',
+    zip_code: '',
+    family_size: 1,
+    income_level: 'low',
+    priority_level: 'medium',
+    registration_date: new Date().toISOString().split('T')[0],
   });
 
   useEffect(() => {
@@ -84,6 +91,7 @@ export default function Households() {
     const filtered = households.filter(
       (h) =>
         h.primary_contact_name.toLowerCase().includes(term) ||
+        h.family_name.toLowerCase().includes(term) ||
         h.phone_number?.toLowerCase().includes(term) ||
         h.address?.toLowerCase().includes(term)
     );
@@ -94,20 +102,34 @@ export default function Households() {
     if (household) {
       setEditingHousehold(household);
       setFormData({
+        family_name: household.family_name,
         primary_contact_name: household.primary_contact_name,
         phone_number: household.phone_number || '',
+        email: household.email || '',
         address: household.address || '',
-        household_size: household.household_size,
+        city: household.city || '',
+        state: household.state || '',
+        zip_code: household.zip_code || '',
+        family_size: household.family_size,
+        income_level: household.income_level,
         priority_level: household.priority_level,
+        registration_date: household.registration_date,
       });
     } else {
       setEditingHousehold(null);
       setFormData({
+        family_name: '',
         primary_contact_name: '',
         phone_number: '',
+        email: '',
         address: '',
-        household_size: 1,
-        priority_level: 1,
+        city: '',
+        state: '',
+        zip_code: '',
+        family_size: 1,
+        income_level: 'low',
+        priority_level: 'medium',
+        registration_date: new Date().toISOString().split('T')[0],
       });
     }
     setOpenDialog(true);
@@ -117,11 +139,18 @@ export default function Households() {
     setOpenDialog(false);
     setEditingHousehold(null);
     setFormData({
+      family_name: '',
       primary_contact_name: '',
       phone_number: '',
+      email: '',
       address: '',
-      household_size: 1,
-      priority_level: 1,
+      city: '',
+      state: '',
+      zip_code: '',
+      family_size: 1,
+      income_level: 'low',
+      priority_level: 'medium',
+      registration_date: new Date().toISOString().split('T')[0],
     });
   };
 
@@ -159,21 +188,18 @@ export default function Households() {
   };
 
   const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 1: return 'error';
-      case 2: return 'warning';
-      case 3: return 'info';
+    switch (priority?.toLowerCase()) {
+      case 'critical': return 'error';
+      case 'high': return 'error';
+      case 'medium': return 'warning';
+      case 'low': return 'info';
       default: return 'default';
     }
   };
 
   const getPriorityLabel = (priority) => {
-    switch (priority) {
-      case 1: return 'High';
-      case 2: return 'Medium';
-      case 3: return 'Low';
-      default: return 'Unknown';
-    }
+    if (!priority) return 'Unknown';
+    return priority.charAt(0).toUpperCase() + priority.slice(1);
   };
 
   if (loading) {
@@ -257,6 +283,7 @@ export default function Households() {
               <TableHead>
                 <TableRow>
                   <TableCell>ID</TableCell>
+                  <TableCell>Family Name</TableCell>
                   <TableCell>Contact Name</TableCell>
                   <TableCell>Phone</TableCell>
                   <TableCell>Address</TableCell>
@@ -269,7 +296,7 @@ export default function Households() {
               <TableBody>
                 {filteredHouseholds.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} align="center">
+                    <TableCell colSpan={9} align="center">
                       <Typography variant="body2" color="textSecondary">
                         No households found
                       </Typography>
@@ -281,14 +308,19 @@ export default function Households() {
                       <TableCell>{household.household_id}</TableCell>
                       <TableCell>
                         <Typography variant="body2" fontWeight="600">
+                          {household.family_name}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
                           {household.primary_contact_name}
                         </Typography>
                       </TableCell>
                       <TableCell>{household.phone_number || 'N/A'}</TableCell>
-                      <TableCell>{household.address || 'N/A'}</TableCell>
+                      <TableCell>{household.address}, {household.city}</TableCell>
                       <TableCell align="center">
                         <Chip
-                          label={household.household_size}
+                          label={household.family_size}
                           size="small"
                           color="default"
                         />
@@ -331,13 +363,22 @@ export default function Households() {
       </Card>
 
       {/* Add/Edit Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
         <DialogTitle>
           {editingHousehold ? 'Edit Household' : 'Add New Household'}
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Family Name"
+                value={formData.family_name}
+                onChange={(e) => setFormData({ ...formData, family_name: e.target.value })}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Primary Contact Name"
@@ -346,12 +387,21 @@ export default function Households() {
                 required
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Phone Number"
                 value={formData.phone_number}
                 onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
             </Grid>
             <Grid item xs={12}>
@@ -360,33 +410,77 @@ export default function Households() {
                 label="Address"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                multiline
-                rows={2}
+                required
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                label="City"
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                label="State"
+                value={formData.state}
+                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                label="Zip Code"
+                value={formData.zip_code}
+                onChange={(e) => setFormData({ ...formData, zip_code: e.target.value })}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 type="number"
-                label="Household Size"
-                value={formData.household_size}
-                onChange={(e) => setFormData({ ...formData, household_size: parseInt(e.target.value) })}
+                label="Family Size"
+                value={formData.family_size}
+                onChange={(e) => setFormData({ ...formData, family_size: parseInt(e.target.value) })}
                 inputProps={{ min: 1 }}
                 required
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                select
+                label="Income Level"
+                value={formData.income_level}
+                onChange={(e) => setFormData({ ...formData, income_level: e.target.value })}
+                required
+                SelectProps={{ native: true }}
+              >
+                <option value="no_income">No Income</option>
+                <option value="very_low">Very Low</option>
+                <option value="low">Low</option>
+                <option value="moderate">Moderate</option>
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 select
                 label="Priority Level"
                 value={formData.priority_level}
-                onChange={(e) => setFormData({ ...formData, priority_level: parseInt(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, priority_level: e.target.value })}
                 required
+                SelectProps={{ native: true }}
               >
-                <option value={1}>High (1)</option>
-                <option value={2}>Medium (2)</option>
-                <option value={3}>Low (3)</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
               </TextField>
             </Grid>
           </Grid>
@@ -397,7 +491,7 @@ export default function Households() {
             onClick={handleSubmit}
             variant="contained"
             color="primary"
-            disabled={!formData.primary_contact_name}
+            disabled={!formData.family_name || !formData.primary_contact_name || !formData.phone_number}
           >
             {editingHousehold ? 'Update' : 'Create'}
           </Button>

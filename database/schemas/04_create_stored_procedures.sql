@@ -28,7 +28,7 @@ CREATE PROCEDURE sp_distribute_package(
     OUT p_message VARCHAR(255),
     OUT p_log_id INT
 )
-BEGIN
+sp_distribute_package: BEGIN
     DECLARE v_current_quantity INT;
     DECLARE v_household_status VARCHAR(20);
     DECLARE v_package_active BOOLEAN;
@@ -249,7 +249,7 @@ CREATE PROCEDURE sp_check_eligibility(
     OUT p_eligible BOOLEAN,
     OUT p_message VARCHAR(255)
 )
-BEGIN
+sp_check_eligibility: BEGIN
     DECLARE v_household_status VARCHAR(20);
     DECLARE v_package_active BOOLEAN;
     DECLARE v_last_distribution_date DATE;

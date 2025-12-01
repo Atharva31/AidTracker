@@ -107,8 +107,8 @@ export default function Inventory() {
     return { label: 'In Stock', color: 'success', icon: <CheckIcon /> };
   };
 
-  const lowStockCount = inventory.filter((item) => item.quantity <= 5).length;
-  const outOfStockCount = inventory.filter((item) => item.quantity === 0).length;
+  const lowStockCount = inventory.filter((item) => (item.quantity || 0) <= 5).length;
+  const outOfStockCount = inventory.filter((item) => (item.quantity || 0) === 0).length;
 
   if (loading) {
     return (
@@ -160,7 +160,7 @@ export default function Inventory() {
                 Total Items
               </Typography>
               <Typography variant="h3" component="div" fontWeight="bold">
-                {inventory.reduce((sum, item) => sum + item.quantity, 0)}
+                {inventory.reduce((sum, item) => sum + (item.quantity || 0), 0)}
               </Typography>
               <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
                 Across all centers
@@ -247,17 +247,17 @@ export default function Inventory() {
                   </TableRow>
                 ) : (
                   inventory.map((item, index) => {
-                    const status = getStockStatus(item.quantity);
+                    const status = getStockStatus(item.quantity || 0);
                     return (
                       <TableRow
                         key={index}
                         hover
                         sx={{
-                          backgroundColor: item.quantity === 0
+                          backgroundColor: (item.quantity || 0) === 0
                             ? 'error.lighter'
-                            : item.quantity <= 5
-                            ? 'warning.lighter'
-                            : 'transparent',
+                            : (item.quantity || 0) <= 5
+                              ? 'warning.lighter'
+                              : 'transparent',
                         }}
                       >
                         <TableCell>
@@ -285,14 +285,14 @@ export default function Inventory() {
                             variant="h6"
                             fontWeight="bold"
                             color={
-                              item.quantity === 0
+                              (item.quantity || 0) === 0
                                 ? 'error.main'
-                                : item.quantity <= 5
-                                ? 'warning.main'
-                                : 'success.main'
+                                : (item.quantity || 0) <= 5
+                                  ? 'warning.main'
+                                  : 'success.main'
                             }
                           >
-                            {item.quantity}
+                            {item.quantity || 0}
                           </Typography>
                         </TableCell>
                         <TableCell>
@@ -335,7 +335,7 @@ export default function Inventory() {
                 <MenuItem value="">Select a center</MenuItem>
                 {centers.map((center) => (
                   <MenuItem key={center.center_id} value={center.center_id}>
-                    {center.name} - {center.location}
+                    {center.center_name} - {center.city}, {center.state}
                   </MenuItem>
                 ))}
               </TextField>
