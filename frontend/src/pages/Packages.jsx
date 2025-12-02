@@ -78,7 +78,7 @@ export default function Packages() {
     if (pkg) {
       setEditingPackage(pkg);
       setFormData({
-        name: pkg.name,
+        name: pkg.package_name,
         description: pkg.description || '',
         category: pkg.category,
       });
@@ -105,11 +105,20 @@ export default function Packages() {
 
   const handleSubmit = async () => {
     try {
+      // Transform formData to match backend schema
+      const apiData = {
+        package_name: formData.name,
+        description: formData.description,
+        category: formData.category,
+        estimated_cost: 10.0, // Default value
+        validity_period_days: 30, // Default value
+      };
+
       if (editingPackage) {
-        await aidPackagesAPI.update(editingPackage.package_id, formData);
+        await aidPackagesAPI.update(editingPackage.package_id, apiData);
         setSuccessMessage('Package updated successfully');
       } else {
-        await aidPackagesAPI.create(formData);
+        await aidPackagesAPI.create(apiData);
         setSuccessMessage('Package created successfully');
       }
 
@@ -230,7 +239,7 @@ export default function Packages() {
                       <TableCell>{pkg.package_id}</TableCell>
                       <TableCell>
                         <Typography variant="body2" fontWeight="600">
-                          {pkg.name}
+                          {pkg.package_name}
                         </Typography>
                       </TableCell>
                       <TableCell>

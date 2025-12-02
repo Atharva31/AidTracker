@@ -352,7 +352,7 @@ export default function Inventory() {
                 <MenuItem value="">Select a package</MenuItem>
                 {packages.map((pkg) => (
                   <MenuItem key={pkg.package_id} value={pkg.package_id}>
-                    {pkg.name} - {pkg.category}
+                    {pkg.package_name} - {pkg.category}
                   </MenuItem>
                 ))}
               </TextField>
