@@ -51,6 +51,7 @@ export const distributionAPI = {
   checkEligibility: (data) => api.post('/distribution/check-eligibility', data),
   getLogs: (params = {}) => api.get('/distribution/logs', { params }),
   getHouseholdHistory: (householdId) => api.get(`/distribution/logs/household/${householdId}`),
+  resetTest: () => api.delete('/distribution/test/reset'),
 };
 
 // Reports

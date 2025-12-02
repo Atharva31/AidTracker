@@ -103,6 +103,7 @@ def get_distribution_logs(
     }
 
 
+
 @router.get("/logs/household/{household_id}")
 def get_household_distribution_history(
     household_id: int,
@@ -120,3 +121,32 @@ def get_household_distribution_history(
         "distributions": logs,
         "total": len(logs)
     }
+
+
+@router.delete("/test/reset")
+def reset_test_data(
+    household_ids: List[int] = [6, 7],
+    package_id: int = 1,
+    db: Session = Depends(get_db)
+):
+    """
+    Reset test data by deleting recent distribution logs for test households
+    This allows the concurrency demo to be run multiple times
+    """
+    try:
+        deleted_count = db.query(DistributionLog).filter(
+            DistributionLog.household_id.in_(household_ids),
+            DistributionLog.package_id == package_id
+        ).delete(synchronize_session=False)
+        
+        db.commit()
+        
+        return {
+            "status": "success",
+            "message": f"Deleted {deleted_count} test distribution logs",
+            "household_ids": household_ids,
+            "package_id": package_id
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))

@@ -36,8 +36,8 @@ export default function ConcurrencyDemo() {
   // Milpitas center ID and package ID (should have only 1 item left)
   const MILPITAS_CENTER_ID = 1;
   const TEST_PACKAGE_ID = 1;
-  const TEST_HOUSEHOLD_1 = 1;
-  const TEST_HOUSEHOLD_2 = 2;
+  const TEST_HOUSEHOLD_1 = 6;  // Williams Family - eligible
+  const TEST_HOUSEHOLD_2 = 7;  // Patel Family - eligible
 
   useEffect(() => {
     loadInitialInventory();
@@ -116,10 +116,47 @@ export default function ConcurrencyDemo() {
     }
   };
 
-  const resetTest = () => {
-    setResults([]);
-    setInventoryAfter(null);
-    loadInitialInventory();
+  const resetTest = async () => {
+    setLoading(true);
+    try {
+      // Clear distribution logs for test households (makes them eligible again)
+      await distributionAPI.resetTest();
+
+      // Get current inventory
+      const response = await inventoryAPI.getAll();
+      const currentInventory = response.data.find(
+        (inv) => inv.center_id === MILPITAS_CENTER_ID && inv.package_id === TEST_PACKAGE_ID
+      );
+
+      // Calculate how much to restock to get to exactly 1 item
+      const currentQty = currentInventory?.quantity || 0;
+      const targetQty = 1;
+      const restockAmount = targetQty - currentQty;
+
+      if (restockAmount > 0) {
+        // Need to add items
+        await inventoryAPI.restock({
+          center_id: MILPITAS_CENTER_ID,
+          package_id: TEST_PACKAGE_ID,
+          quantity: restockAmount
+        });
+      } else if (restockAmount < 0) {
+        // Too many items - need to manually set (use direct SQL or just inform user)
+        setError(`Current inventory is ${currentQty}. Please manually set to 1 item for the test.`);
+        setLoading(false);
+        return;
+      }
+
+      setResults([]);
+      setInventoryAfter(null);
+      await loadInitialInventory();
+
+      setError(null);
+    } catch (err) {
+      setError('Failed to reset inventory: ' + (err.response?.data?.detail || err.message));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const successCount = results.filter(r => r.status === 'success').length;
