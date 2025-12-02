@@ -305,7 +305,7 @@ export default function Inventory() {
                         </TableCell>
                         <TableCell>
                           <Typography variant="caption">
-                            {new Date(item.last_updated).toLocaleString()}
+                            {new Date(item.updated_at).toLocaleString()}
                           </Typography>
                         </TableCell>
                       </TableRow>
