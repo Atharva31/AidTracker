@@ -460,18 +460,3 @@ ports:
 ## 📄 License
 
 This project is created for educational purposes as part of a database systems course.
-
----
-
-## 🙏 Acknowledgments
-
-- FastAPI for the excellent Python web framework
-- Material-UI for beautiful React components
-- MySQL for robust ACID transaction support
-- Docker for simplified deployment
-
----
-
-**Built with ❤️ for humanitarian aid distribution**
-
-Last Updated: November 29, 2024
